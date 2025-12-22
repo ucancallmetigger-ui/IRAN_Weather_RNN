@@ -10,11 +10,19 @@ key-features:
  Comprehensive model comparison (accuracy, stability, computational cost)
  Interactive web dashboard built with Streamlit
 
+
+
  Advanced models implemented from scratch:
+ 
 Custom LSTM 
+
 Custom GRU
+
 ConvLSTM for spatial-temporal patterns across cities
+
 Temporal Convolutional Network
+
 Transformer encoder for time series
+
 LISENCE:
  This project is licensed under the MIT License - see the LICENSE file for details.
