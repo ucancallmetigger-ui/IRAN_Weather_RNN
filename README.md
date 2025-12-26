@@ -185,11 +185,47 @@ Impact:
 Disabling the output gate limits the model’s expressive power, as relevant internal memory cannot be effectively propagated to predictions.
 
 
->>>The ablation study demonstrates that all three gates play complementary roles. The forget gate is particularly critical for long-term stability, while the input and output gates govern adaptability and expressiveness.
+>The ablation study demonstrates that all three gates play complementary roles. The forget gate is particularly critical for long-term stability, while the input and output gates govern adaptability and expressiveness.
 
->>>This provides insight into how each gate contributes to long-term dependency modeling.
+>This provides insight into how each gate contributes to long-term dependency modeling.
 
 "Custom GRU"
+
+Custom GRU – Model Explanation & Comparison
+
+The Custom GRU (Gated Recurrent Unit) implemented in this project is a manually constructed recurrent architecture designed as a computationally efficient alternative to LSTM, while still addressing the core limitations of vanilla RNNs.
+
+>>>How It Works
+
+GRU simplifies the gating mechanism by combining memory update and forgetting into fewer gates. Instead of maintaining a separate cell state, GRU directly updates its hidden state using two gates:
+
+>Update Gate (z) – controls how much past information is retained
+
+>Reset Gate (r) – determines how much past context is ignored when incorporating new input
+
+This streamlined structure allows GRU to dynamically balance between long-term memory retention and short-term adaptability.
+
+>>>Advantages over Standard RNNs
+
+Like LSTM, GRU mitigates the vanishing gradient problem by introducing gated information flow. Compared to vanilla RNNs, GRU offers:
+
+>Stable learning over longer sequences
+
+>Improved gradient propagation
+
+>Better handling of temporal dependencies
+
+>>>Custom Implementation Benefits
+
+By implementing the GRU cell manually, this project enables:
+
+>Fine-grained control over gate behavior
+
+>Transparent gradient analysis
+
+>Direct comparison with LSTM under identical training conditions
+
+>This design choice strengthens the experimental rigor of the model comparison.
 
 -Fully manual GRU cell implementation
 
