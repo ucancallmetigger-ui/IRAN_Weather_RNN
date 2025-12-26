@@ -37,21 +37,68 @@ To optimize performance, data fetching is cached using Streamlit’s caching mec
 
 "Data Preprocessing"
 
+Effective preprocessing is critical for time-series forecasting, especially when using deep learning models. This project applies several preprocessing techniques, each serving a specific purpose.
+
 Key preprocessing steps include:
 
 1-Missing-value handling via forward filling
 
+Missing Value Handling (Forward Fill):
+
+Missing temperature values are handled using forward filling, ensuring temporal continuity.
+
+-Why it matters:
+Prevents sequence breaks that could disrupt recurrent learning while preserving realistic temporal behavior.
+
 2-Feature scaling using MinMaxScaler
+
+Feature Scaling (Min–Max Normalization):
+
+All temperature values are normalized to the range [0, 1].
+
+-Why it matters:
+
+>Stabilizes gradient updates
+
+>Accelerates model convergence
+
+>Prevents domination of large numerical values
 
 3-Sliding window sequence generation (default: 30 days)
 
+Sliding Window Sequence Generation:
+
+Time-series data is transformed into overlapping sequences of fixed length (default: 30 days).
+
+-Why it matters:
+
+>Enables supervised learning from sequential data
+
+>Allows models to learn temporal dependencies
+
+>Defines the effective “memory horizon” of the model
+
 4-City-wise normalization for spatial modeling
 
-5-Two preprocessing pipelines are implemented:
+Spatial–Temporal Preprocessing:
 
-6-Univariate temporal sequences
+For multi-city modeling, each city’s data is scaled independently and combined into a unified tensor.
 
-7-Multi-city spatial–temporal tensors
+-Why it matters:
+
+>Preserves local city-specific distributions
+
+>Enables spatial correlation learning
+
+>Supports ConvLSTM-based architectures
+
+"These preprocessing steps directly influence model stability, convergence speed, and prediction accuracy, forming the backbone of the entire forecasting pipeline."
+
+-Two preprocessing pipelines are implemented:
+
+1-Univariate temporal sequences
+
+2-Multi-city spatial–temporal tensors
 
 "Modeling Approaches"
 
@@ -73,6 +120,36 @@ All recurrent models are implemented without relying on high-level PyTorch abstr
 
 "Custom LSTM"
 
+-Custom LSTM – Model Explanation & Advantages over RNNs
+
+The Custom LSTM implemented in this project is a manually constructed recurrent neural network designed to overcome the limitations of standard RNNs when modeling long time-series data.
+
+>>>How It Works
+
+Unlike vanilla RNNs, which rely on a single hidden state, LSTM introduces a memory cell that runs through time with controlled information flow via gates. This design allows the network to:
+
+1-Preserve long-term contextual information
+
+2-Selectively update or forget memory contents
+
+3-Mitigate vanishing and exploding gradient problems
+
+>>>Why LSTM Over RNN?
+
+Standard RNNs struggle with long sequences due to unstable gradients, causing them to focus mostly on short-term dependencies.
+
+LSTM advantages include:
+
+Stable gradient propagation over long sequences
+
+Explicit memory control through gating mechanisms
+
+Superior performance on long-horizon forecasting tasks such as climate and weather data
+
+In this project, LSTM significantly outperforms vanilla sequence models by capturing both seasonal patterns and gradual temperature trends.
+
+and the other advantages are:
+
 -Manual gate definitions (input, forget, output, candidate)
 
 -Multi-layer architecture
@@ -81,13 +158,34 @@ All recurrent models are implemented without relying on high-level PyTorch abstr
 
 -Ablation Study
 
-To analyze gate importance, three ablation variants are implemented:
+>>>LSTM Ablation Study – Gate-Level Analysis
 
--No Forget Gate
+In order to better understand the internal dynamics of the LSTM architecture, an ablation study is conducted by selectively disabling individual gates. This analysis highlights the functional importance of each gate in modeling long-term temporal dependencies.
 
--No Input Gate
+-Forget Gate
 
--No Output Gate
+The forget gate controls how much of the previous cell state is retained over time.
+It enables the model to selectively discard irrelevant or outdated information.
+
+Impact:
+Without the forget gate, the model accumulates unnecessary historical information, leading to unstable learning and degraded long-term forecasting performance.
+
+-Input Gate
+
+The input gate determines how much new information is written into the cell state at each time step.
+
+Impact:
+Removing the input gate restricts the model’s ability to adapt to new patterns or sudden changes in temperature trends, reducing responsiveness to recent data.
+
+-Output Gate
+
+The output gate controls how much of the internal cell state is exposed to the hidden state and downstream layers.
+
+Impact:
+Disabling the output gate limits the model’s expressive power, as relevant internal memory cannot be effectively propagated to predictions.
+
+
+>>>The ablation study demonstrates that all three gates play complementary roles. The forget gate is particularly critical for long-term stability, while the input and output gates govern adaptability and expressiveness.
 
 >>>This provides insight into how each gate contributes to long-term dependency modeling.
 
